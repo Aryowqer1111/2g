@@ -2,13 +2,10 @@ from typing import Dict, Any
 import streamlit as st
 
 class GameLoop:
-    def __init__(self):
-        self.execution_order = ["politics", "economy", "foreign", "social", "events"]
+    def __init__(self): pass
 
     def tick(self, state: Dict[str, Any]) -> Dict[str, Any]:
         state["turn"] += 1
-        # 🔴 БЫЛО: недельная логика с state["week "] и WEEKS_PER_MONTH
-        # 🟢 ИСПРАВЛЕНО: возврат к месячному шагу
         state["month"] += 1
         if state["month"] > 12:
             state["month"] = 1
@@ -16,12 +13,8 @@ class GameLoop:
             state["logs"].insert(0, f"📅 {state['month']}.{state['year']} — Новый год.")
 
         state["pending_effects"] = []
-        
         comm_eng = st.session_state.get("committee_engine")
-        skills_eng = st.session_state.get("skills_engine")
-        cc_df = state.get("cc_members")
-        
-        if comm_eng and skills_eng and cc_df is not None:
+        if comm_eng and state.get("cc_members") is not None:
             comm_eng.auto_fill_by_system(state)
 
         self._apply_effects(state)
@@ -31,7 +24,7 @@ class GameLoop:
     def _apply_effects(self, state):
         for eff in state.get("pending_effects", []):
             target = eff.get("target")
-            delta = eff.get("delta", 0)  # 🔴 БЫЛО: * 0.25 для недельного масштаба | 🟢 Убрано
+            delta = eff.get("delta", 0)
             source = eff.get("source", "system")
             if target in state and isinstance(state[target], (int, float)):
                 old = state[target]

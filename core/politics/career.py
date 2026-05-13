@@ -21,7 +21,7 @@ CAREER_TIERS = [
 ]
 
 class CareerSystem:
-    def __init__(self):
+    def __init__(self):  # ← ДВА подчёркивания!
         self.level_idx = 0
         self.score = 0.0
         self.reputation = 65.0
@@ -35,19 +35,16 @@ class CareerSystem:
         region_perf = 70.0
         if self.region_assignment and self.region_assignment in state.get("regions", {}):
             region_perf = state["regions"][self.region_assignment]["plan_fulfillment"]
-            
         plan_score = max(0, (region_perf - 60)) * 0.35
         faction_score = max(0, self.faction_support) * 0.25
         rep_score = max(0, self.reputation) * 0.20
         block_score = max(0, self.block_support) * 0.20
-        
         discipline_penalty = self.disciplinary_incidents * 18.0
         if self.incident_decay_months > 0:
             self.incident_decay_months -= 1
             if self.incident_decay_months == 0:
                 self.disciplinary_incidents = max(0, self.disciplinary_incidents - 1)
-        # 🔹 БЕЗ *0.25 — полный месячный прогресс
-        return max(0.0, plan_score + faction_score + rep_score + block_score - discipline_penalty)
+        return max(0.0, plan_score + faction_score + rep_score + block_score - discipline_penalty)  # ← БЕЗ *0.25
 
     def advance_check(self) -> bool:
         if self.level_idx >= len(CAREER_TIERS) - 1:
