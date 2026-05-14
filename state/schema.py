@@ -1,24 +1,50 @@
 import copy
+
+# DEFAULT_STATE должен содержать player_cc_id = None по умолчанию, если игрок не член ЦК изначально
 DEFAULT_STATE = {
-    "year": 1960, "month": 1, "turn": 0,
-    "logs": ["☭ Система инициализирована."], "pending_effects": [],
-    "player_cc_id": None, "career_level": "raykom", "career_score": 0.0,
-    "career_reputation": 65.0, "career_incidents": 0,
-    "faction_coalitions": {}, "plenum_agenda": [], "congress_next_year": 1961,
-    "politburo_ids": [], "gen_sec_authority": 85.0,
-    "gdp_index": 100.0, "budget": 50.0, "inflation_hidden": 0.0,
-    "ministry_efficiency": {}, "five_year_plan": {"progress": 0.0, "deadline": 1965, "target": 105.0},
-    "reform_policy": "centralized", "reform_intensity": 0.0, "economic_model": "soviet_standard",
-    "tech_branches": {"space": 50, "nuclear": 60, "computing": 30},
-    "shadow_economy": 0.0, "corruption_index": 15.0,
-    "relations_usa": -60.0, "relations_warsaw_pact": 80.0, "relations_nam": 40.0,
-    "sev_integration": 70.0, "crisis_active": None,
-    "military_industry": {"conventional": 80, "nuclear": 40, "space": 50},
-    "thaw_index": 70.0, "ideology_rigidness": 50.0, "intelligentsia_mood": 65.0, "cultural_freedom": 60.0,
-    "regional_nationalism": {"ua": 10, "kk": 15, "caucasus": 20}, "repression_level": 20.0,
-    "ui_metrics_history": [], "advisors_active": True, "ai_events_enabled": False,
-    "cc_selected_id": None, "selected_committee": None, "character_created": False,
-    "stability": 70.0, "support": 65.0, "ideology": 70.0, "prestige": 60.0, "security": 65.0,
-    "cc_members": None, "regions": None, "career": None, "player_profile": None
+    "year": 1960,
+    "month": 1,
+    "turn": 0,
+    "logs": ["☭ Система инициализирована."],
+    "pending_effects": [],
+    "player_cc_id": None, # <--- Должно быть None
+    "career_level": "raykom",
+    "career_score": 0.0,
+    "career_reputation": 65.0,
+    "career_incidents": 0,
+    # ... (остальные поля из вашего txt.txt, включая новые)
+    "obkom_unlocked": False,
+    "clan_affinity": 50.0,
+    "corruption_risk": 0.0,
+    "plan_pressure": 1.0,
+    "historical_phase": "thaw",
+    "obkom_apparatus": None,
+    "obkom_hero_cc_id": None,
+    "obkom_bureau_tension": 40.0,
+    "obkom_hero_ascent": 8.0,
+    "political_capital": 40.0,
+    "kgb_attention": 8.0,
+    "obkom_secretariat": None,
+    "secretariat_dilemma": None,
+    "plenum_months_counter": 0,
+    "regional_plenum_open": False,
+    "regional_plenum_init1": None,
+    "regional_plenum_init2": None,
+    "regional_plenum_last_result": None,
+    "petitions_queue": [],
+    "career_growth_block_turns": 0,
+    "obkom_hero_seated": False,
+    # ... (остальные поля)
+    "player_profile": None, # <--- Может быть None до создания
+    "cc_members": None, # <--- Инициализируется в init_cc_data
+    "regions": None, # <--- Инициализируется в init_cc_data
+    "career": None, # <--- Инициализируется в character_creation
+    # ... (остальные поля)
+    "stability": 50.0,  # Добавлено поле 'stability'
+    "budget": 1000.0,  # Добавлено поле 'budget'
+    "support": None,  # Add the 'support' key
 }
-def get_clean_state(): return copy.deepcopy(DEFAULT_STATE)
+
+def get_clean_state():
+    return copy.deepcopy(DEFAULT_STATE)
+

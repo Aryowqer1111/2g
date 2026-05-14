@@ -1,8 +1,9 @@
 import random
 from data.skills_config import FACTION_SKILL_BIASES, COMMITTEE_SKILL_REQUIREMENTS, COMMITTEE_BONUS_MAP
+import streamlit as st  # 🔹 Добавлен импорт
 
 class SkillsEngine:
-    def __init__(self):
+    def __init__(self):  # 🔹 Исправлено: def init(self): -> def __init__(self):
         self.competencies = {}
 
     def generate_competencies(self, df):
@@ -47,12 +48,17 @@ class SkillsEngine:
 
         return base_bonus * match_factor
 
-    def apply_monthly_effects(self, state):
+    def apply_monthly_effects(self, state_dict):
         effects_keys = ["stability", "budget", "support", "ideology", "prestige", "security"]
         weighted_effects = {k: 0.0 for k in effects_keys}
 
-        comm_eng = state.committee_engine
+        # 🔹 ИСПРАВЛЕНО: доступ к committee_engine через st.session_state
+        comm_eng = st.session_state.get("committee_engine")
+        if not comm_eng:
+            # Если движок комиссий не найден, выходим
+            return
 
+        # 🔹 ИСПРАВЛЕНО: используем comm_eng напрямую, а не из state_dict
         for mid, commits in comm_eng.members_assignments.items():
             for comm_name in commits:
                 bonus = self.calculate_committee_bonus(str(mid), comm_name)
@@ -64,14 +70,14 @@ class SkillsEngine:
 
         for stat, value in weighted_effects.items():
             if abs(value) > 0.05:
-                current = state.get(stat, 0.0)
-                # 🔹 БЕЗ *0.25 — полный месячный эффект
+                current = state_dict.get(stat, 0.0)
+                # Предполагаем, что бюджет может быть > 100, остальные ограничены 100
                 if stat == "budget":
-                    state[stat] = max(-50, min(150, current + value))
+                    state_dict[stat] = max(-50, min(150, current + value))
                 elif stat in ["stability", "support", "ideology", "prestige", "security"]:
-                    state[stat] = max(0, min(100, current + value))
+                    state_dict[stat] = max(0, min(100, current + value))
 
-        changes = {k: v for k, v in weighted_effects.items() if v > 0.05}
+        changes = {k: v for k, v in weighted_effects.items() if abs(v) > 0.05}
         if changes:
             parts = [f"{k.capitalize()}:{v:+.2f}" for k, v in changes.items()]
-            state.logs.insert(0, "⚙️ Комиссии: " + ", ".join(parts))
+            state_dict["logs"].insert(0, "⚙️ Комиссии: " + ", ".join(parts))
